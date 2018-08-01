@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Simple chat with custom translation</title>
+    <style type="text/css">
+        #input_box, button[type="submit"]{ float: left }
+    </style>
+  </head>
+  <body>
+    <div id="msg_list">
+    </div>
+    <div>
+    <hr/>
+    <textarea id="input_box" placeholder="Enter message" cols=50 rows=10></textarea>
+    <button type="submit">Send message</button>
+    </div>
+    <script>
+        var ws = new WebSocket('ws://127.0.0.1:5995'),
+            inp_box = document.querySelector('#input_box'),
+            btn = document.querySelector('button[type="submit"]'),
+            msg_list = document.querySelector('#msg_list'),
+            err_msg = "";
+        
+        ws.onopen = function(e) {          
+        };
+        
+        ws.onclose = function(e) {
+            msg_list.innerHTML += '<p style="color:red">Websocket connection is closed(or failed to establish)!</p>'
+            btn.disabled = true;
+        };
+        
+        ws.onerror = function(e) {
+            err_msg = "WebSocket connection to '" + e.target.url + "' failed";
+            alert(err_msg);
+        }; 
+            
+        btn.addEventListener('click', function(e){
+            var msg = inp_box.value.trim().replace('/\s+/g', ' ');
+            if (msg == "") {
+                alert("You can't send empty message!");
+                return false;
+            }
+            ws.send(JSON.stringify({message: msg}))
+        });
+        
+        ws.onmessage = function(e){
+            var data = JSON.parse(e.data),
+                p = document.createElement('p');
+                if (data.service_info) {
+                    p.innerHTML = data.service_info;
+                } else {
+                    p.innerHTML = 'Client ' + data.client_info 
+                            + ' sent: <b>' + data.original 
+                            + '</b> (translated: <b>' + data.translated + '</b>)';
+                }
+                
+            msg_list.appendChild(p);
+                          
+        };
+          
+    </script>
+  </body>
+</html>

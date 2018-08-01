@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<time>
+<year>{t.tm_year}</year>
+<month>{t.tm_mon}</month>
+<day>{t.tm_mday}</day>
+<hour>{t.tm_hour}</hour>
+<minute>{t.tm_min}</minute>
+<second>{t.tm_sec}</second>
+</time>
